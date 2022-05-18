@@ -30,5 +30,7 @@
         'spans' => [8],    //行单元格合并 可选
         'align' => 'C',     //文本水平位置 可选 L C R
         'border' => 'LRT',  //定制化显示行边框 可选 LTRB  
+        'format' => 'none', //默认值 'ellipsis' 单元格超出行内容 截断还是省略
+        'stretchDiff' => 0  //单元格内容拉伸偏移量
     ])
 ```
