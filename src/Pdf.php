@@ -25,7 +25,10 @@ class Pdf extends \TCPDF
         $this->pdfEncoding = $encoding;
 
         $this->AddFont('songti', '', __DIR__ . '/font/songti.php');
+        $this->AddFont('twkai98_1', '', __DIR__ . '/font/twkai98_1.php');
+
         $this->setFont('songti', '', 10.5);
+
     }
 
     /**
