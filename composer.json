@@ -1,0 +1,19 @@
+{
+    "name": "mondagroup/md-pdf",
+    "description": "md pdf",
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.2",
+        "ext-mbstring": "*",
+        "ext-iconv": "*",
+        "tecnickcom/tcpdf": "^6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pdf\\": "src/"
+        },
+        "files": [
+            "./src/functions.php"
+        ]
+    }
+}
