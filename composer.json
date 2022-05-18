@@ -1,6 +1,6 @@
 {
-    "name": "mondagroup/md-pdf",
-    "description": "md pdf",
+    "name": "mondagroup/pdf",
+    "description": "基于tcpdf二次封装，高性能的PDF制造者",
     "minimum-stability": "dev",
     "require": {
         "php": "^7.2",
