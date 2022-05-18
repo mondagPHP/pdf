@@ -189,6 +189,8 @@ class Pdf extends \TCPDF
             $configRowLine = $sendData['rowLine'] ?? $configRowLine;
             $align = $sendData['align'] ?? 'L';
             $border = $sendData['border'] ?? 1;
+            $currentFormat = $sendData['format'] ?? $format;
+            $stretchDiff = $sendData['stretchDiff'] ?? $this->FontSize;
 
             //spans
             $currentColumnWidthArr = $columnWidthArr;
@@ -202,7 +204,7 @@ class Pdf extends \TCPDF
                     continue;
                 }
                 $maxTdW = $currentColumnWidthArr[$k];
-                $lines = $this->tableCalculateTdLines($maxTdW - $tdPaddingL - $tdPaddingR, $data, $configRowLine, $format);
+                $lines = $this->tableCalculateTdLines($maxTdW - $tdPaddingL - $tdPaddingR, $data, $configRowLine, $currentFormat);
                 if (count($lines) > $maxLine) {
                     $maxLine = count($lines);
                 }
@@ -246,8 +248,8 @@ class Pdf extends \TCPDF
                         $this->setY($curY, false);
                     }
                     $stretch = 0;
-                    if ($strW - $this->GetStringWidth($lineTxt) < $this->FontSize * 1) {
-                        $stretch = 2;
+                    if ($strW - $this->GetStringWidth($lineTxt) < $stretchDiff) {
+                        $stretch = 4;
                     }
                     $this->Cell($strW, $this->FontSize, $lineTxt, 0, 1, $align, 0, '', $stretch);
                 }
