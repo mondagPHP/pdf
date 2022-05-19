@@ -190,7 +190,7 @@ class Pdf extends \TCPDF
             $rowData = $sendData['data'] ?? [];
             $configRowLine = $sendData['rowLine'] ?? $configRowLine;
             $align = $sendData['align'] ?? 'L';
-            $border = $sendData['border'] ?? 'LBR';
+            $border = $sendData['border'] ?? 'LB';
             $currentFormat = $sendData['format'] ?? $format;
             $stretchDiff = $sendData['stretchDiff'] ?? $this->FontSize;
 
@@ -233,9 +233,7 @@ class Pdf extends \TCPDF
                 $this->setY($curY, false);
 
                 $cellBorder = 'R';
-                if ($cIdx === $columnCount - 1 ) {
-                    $cellBorder = 'T';
-                } elseif ($rows === 0) {
+                if ($rows === 0) {
                     $cellBorder = 'TR';
                 }
                 $this->Cell($tdW, $rowH, '', $border === 0 ? 0 : $cellBorder);
