@@ -6,6 +6,7 @@ $pdf = new \Pdf\Pdf();
 // remove default header/footer
 $pdf->setPrintHeader(false);
 $pdf->setPrintFooter(false);
+$pdf->setAutoPageBreak(false, 10);
 
 $pdf->setMbStr(true);
 $pdf->setHeaderMargin(10);
@@ -62,7 +63,6 @@ $pdfTableIter->send([
     'data' => ['序号', '商品名称', '规格型号', '单位', '数量', '单价', '金额', '备注'],
     'rowLine' => 1,
     'align' => 'C',
-    'border' => 'LRT',
 ]);
 $tableData = [
     [1, 'Hello world Hello world Hello world Hello world Hello world ', '240g', 'g', '10000', 1, '10000', ''],
@@ -74,8 +74,7 @@ $tableData = [
 foreach ($tableData as $row) {
     $pdfTableIter->send([
         'data' => $row,
-        'rowLine' => 2,
-        'border' => 'LRT',
+        'rowLine' => 2
     ]);
 }
 $pdfTableIter->send([
@@ -83,7 +82,6 @@ $pdfTableIter->send([
     'rowLine' => 2,
     'spans' => [8],
     'align' => 'C',
-    'border' => 'LRT',
 ]);
 $pdfTableIter->send([
     'data' => ['span1', 'span2'],
@@ -126,6 +124,20 @@ $table2->send([
 ]);
 
 $pdf->Ln(2);
+
+//autoPage
+$table3 = $pdf->tableIter(0, 3, [
+    'columnWidths' => [
+        ['width' => 0.1],
+        ['width' => 0.5],
+        ['width' => 0.4]],
+    'rowLine' => 3
+]);
+for($i = 0; $i < 35; $i++) {
+    $table3->send([
+        'data' => [$i, str_repeat('数据', rand(1, 20)), str_repeat('数据', rand(1, 20))],
+    ]);
+}
 
 
 $pdf->Output(__DIR__ . '/example_table.pdf', 'F');

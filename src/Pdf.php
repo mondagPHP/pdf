@@ -136,7 +136,8 @@ class Pdf extends \TCPDF
      *              <li>'isFixLine' => true, // 默认值：false ，是否每行固定行数，</li>
      *              <li>'tdPadding' => 1.5 //默认值： 0 ，每个单元格子上下左右间距 ，还可以传数组 eg:['B'=>1] 设置下边距 1mm, L:左，T：上，R：右，B：下</li>
      *              <li>'vAlign' => 'T' //默认值'C' 单元格 内容垂直位置， T：垂直居上， 'C' 垂直居中</li>
-     *              <li>'format' => 'none' //默认值 'ellipsis' 单元格超出行内容 截断还是省略</li></ul>
+     *              <li>'format' => 'none' //默认值 'ellipsis' 单元格超出行内容 截断还是省略</li>
+     *              </ul>
      * @return \Generator
      */
     public function tableIter(float $w = 0, int $columns = 1, array $config = [])
@@ -155,12 +156,10 @@ class Pdf extends \TCPDF
         $startX = $this->GetX();
         $startY = $this->GetY();
         $tdPadding = $config['tdPadding'] ?? 0.5;
-
         $tdPaddingL = 0;
         $tdPaddingT = 0;
         $tdPaddingR = 0;
         $tdPaddingB = 0;
-
         if (is_array($tdPadding)) {
             $tdPaddingL = $tdPadding['L'] ?? $tdPaddingL;
             $tdPaddingT = $tdPadding['T'] ?? $tdPaddingT;
@@ -181,6 +180,9 @@ class Pdf extends \TCPDF
 
         $configRowLine = $config['rowLine'] ?? 1;
         $configIsFixLine = $config['isFixLine'] ?? false;
+
+        $rows = 0;
+
         while (true) {
             $sendData = yield;
             $cData = [];
@@ -188,7 +190,7 @@ class Pdf extends \TCPDF
             $rowData = $sendData['data'] ?? [];
             $configRowLine = $sendData['rowLine'] ?? $configRowLine;
             $align = $sendData['align'] ?? 'L';
-            $border = $sendData['border'] ?? 1;
+            $border = $sendData['border'] ?? 'LBR';
             $currentFormat = $sendData['format'] ?? $format;
             $stretchDiff = $sendData['stretchDiff'] ?? $this->FontSize;
 
@@ -216,15 +218,28 @@ class Pdf extends \TCPDF
 
             $rowH = $maxLine * $this->FontSize + ($maxLine - 1) * $lineSpace + $tdPaddingT + $tdPaddingB;
 
+            //autoPage
+            if ($this->y > ($this->h - $rowH - $this->bMargin)) {
+                $this->AddPage($this->pdfOrientation, $this->pdfFormat, true);
+                $this->setY($this->tMargin, false);
+                $startY = $this->GetY();
+                $rows = 0;
+            }
+
             foreach ($currentColumnWidthArr as $cIdx => $tdW) {
                 $lines = $cData[$cIdx] ?? [];
                 $curY = $startY;
                 $this->setX($rowX);
                 $this->setY($curY, false);
-                if ($cIdx !== $columnCount - 1) {
-                    $this->Cell($tdW, $rowH, '', $border === 0 ? 0 : 'R');
+
+                $cellBorder = 'R';
+                if ($cIdx === $columnCount - 1 ) {
+                    $cellBorder = 'T';
+                } elseif ($rows === 0) {
+                    $cellBorder = 'TR';
                 }
-                $lineCount = count($lines) - 1;
+                $this->Cell($tdW, $rowH, '', $border === 0 ? 0 : $cellBorder);
+
                 $this->setX($rowX + $tdPaddingL);
 
                 if ($vAlign == 'T') {
@@ -236,17 +251,11 @@ class Pdf extends \TCPDF
                 $strW = $tdW - $tdPaddingL - $tdPaddingR;
                 foreach ($lines as $lineIdx => $lineTxt) {
                     $this->setX($rowX + $tdPaddingL);
-                    if ($lineIdx === 0 && $lineIdx === $lineCount) {
-                        $this->setY($curY, false);
-                    } elseif ($lineIdx === 0 && $lineIdx !== $lineCount) {
-                        $this->setY($curY, false);
-                    } elseif ($lineIdx !== 0 && $lineIdx !== $lineCount) {
+                    if ($lineIdx !== 0) {
                         $curY += $this->FontSize + $lineSpace;
-                        $this->setY($curY, false);
-                    } elseif ($lineIdx === $lineCount) {
-                        $curY += $this->FontSize + $lineSpace;
-                        $this->setY($curY, false);
                     }
+
+                    $this->setY($curY, false);
                     $stretch = 0;
                     if ($strW - $this->GetStringWidth($lineTxt) < $stretchDiff) {
                         $stretch = 4;
@@ -258,6 +267,7 @@ class Pdf extends \TCPDF
             $this->setX($startX);
             $this->setY($startY);
             $this->Cell($tableWith, $rowH, '', $border);
+            $rows++;
             $startY += $rowH;
             $this->setY($startY);
         }
