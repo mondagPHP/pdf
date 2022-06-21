@@ -15,6 +15,17 @@ class Pdf extends \TCPDF
     private $pdfEncoding;
     private $pdfUnit;
 
+    //页码样式
+    private $footerData = [
+        'prefix' => '页码：',
+        'separator' => ' / ',
+        'align' => 'C',
+        'font' => [
+            'size' => 11,
+            'family' => 'ht',
+        ],
+    ];
+
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
@@ -39,6 +50,14 @@ class Pdf extends \TCPDF
     public function setMbStr(bool $b)
     {
         $this->isMbStr = $b;
+    }
+
+    /**
+     * @param string[] $footerData
+     */
+    public function setFooterData(array $footerData): void
+    {
+        $this->footerData = array_merge($this->footerData, $footerData);
     }
 
     /**
@@ -325,14 +344,14 @@ class Pdf extends \TCPDF
             $uniChar = $this->subStr($txt, $i, 1);
             $uniLen = $this->GetStringWidth($uniChar) ?: 0;
             if ($curW + $uniLen > $maxW) {
-                if (count($lines) === ($limitLines - 1)) {
+                if (count($lines) === ($limitLines - 1) && $format !== 'fill') {
                     if ($format === 'ellipsis') {
                         $curS .= '...';
                     }
                     array_push($lines, $curS);
                     $curS = '';
                     break;
-                } elseif (count($lines) < $limitLines) {
+                } elseif (count($lines) < $limitLines || $format === 'fill') {
                     array_push($lines, $curS);
                     $curW = 0;
                     if ($format === 'ellipsis') {
@@ -350,5 +369,19 @@ class Pdf extends \TCPDF
             array_push($lines, $curS);
         }
         return $lines;
+    }
+
+    /**
+     * 自定义页脚
+     */
+    public function Footer(): void
+    {
+        $this->SetY(-10);
+        $font = $this->footerData['font'];
+        $this->SetFont($font['family'] ?? 'ht', '', $font['size'] ?? 11);
+        $prefix = $this->footerData['prefix'] ?? '页码：';
+        $separator = $this->footerData['separator'] ?? ' / ';
+        $align = $this->footerData['align'] ?? 'C';
+        $this->Cell(0, 0, $prefix . $this->getAliasNumPage() . $separator . $this->getAliasNbPages(), 0, 1, $align);
     }
 }
