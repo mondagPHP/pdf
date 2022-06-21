@@ -371,14 +371,14 @@ class Pdf extends \TCPDF
         return $lines;
     }
 
-    // Page footer
-    public function Footer() {
-        // Position at 15 mm from bottom
+    /**
+     * 自定义页脚
+     */
+    public function Footer(): void
+    {
         $this->SetY(-10);
-        // Set font
         $font = $this->footerData['font'];
         $this->SetFont($font['family'] ?? 'ht', '', $font['size'] ?? 11);
-        // Page number
         $prefix = $this->footerData['prefix'] ?? '页码：';
         $separator = $this->footerData['separator'] ?? ' / ';
         $align = $this->footerData['align'] ?? 'C';
