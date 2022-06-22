@@ -16,7 +16,7 @@ class Pdf extends \TCPDF
     private $pdfUnit;
 
     //页码样式
-    private $footerData = [
+    private $footerFormat = [
         'prefix' => '页码：',
         'separator' => ' / ',
         'align' => 'C',
@@ -53,11 +53,11 @@ class Pdf extends \TCPDF
     }
 
     /**
-     * @param string[] $footerData
+     * @param array $footerFormat
      */
-    public function setFooterData(array $footerData): void
+    public function setFooterFormat(array $footerFormat): void
     {
-        $this->footerData = array_merge($this->footerData, $footerData);
+        $this->footerFormat = array_merge($this->footer_margin, $footerFormat);
     }
 
     /**
@@ -377,11 +377,11 @@ class Pdf extends \TCPDF
     public function Footer(): void
     {
         $this->SetY(-10);
-        $font = $this->footerData['font'];
+        $font = $this->footerFormat['font'];
         $this->SetFont($font['family'] ?? 'ht', '', $font['size'] ?? 11);
-        $prefix = $this->footerData['prefix'] ?? '页码：';
-        $separator = $this->footerData['separator'] ?? ' / ';
-        $align = $this->footerData['align'] ?? 'C';
+        $prefix = $this->footerFormat['prefix'] ?? '页码：';
+        $separator = $this->footerFormat['separator'] ?? ' / ';
+        $align = $this->footerFormat['align'] ?? 'C';
         $this->Cell(0, 0, $prefix . $this->getAliasNumPage() . $separator . $this->getAliasNbPages(), 0, 1, $align);
     }
 }
