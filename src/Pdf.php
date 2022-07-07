@@ -36,8 +36,9 @@ class Pdf extends \TCPDF
         $this->pdfEncoding = $encoding;
 
         $this->AddFont('ht', '', __DIR__ . '/font/ht.php');
+        $this->AddFont('tbht_r', '', __DIR__ . '/font/tbht_r.php');
 
-        $this->setFont('ht', '', 10.5);
+        $this->setFont('tbht_r', '', 10.5);
 
     }
 

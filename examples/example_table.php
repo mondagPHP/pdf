@@ -11,6 +11,9 @@ $pdf->setAutoPageBreak(false, 10);
 $pdf->setMbStr(true);
 $pdf->setHeaderMargin(10);
 $pdf->AddPage();
+$pdf->AddFont('tbht_r', '');
+
+$pdf->setFont('tbht_r', '', 10.5);
 
 $pdf->setFontSize(8);
 
