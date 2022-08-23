@@ -2,11 +2,11 @@
 // TCPDF FONT FILE DESCRIPTION
 $type='TrueTypeUnicode';
 $name='TaipeiSansTCBeta-Regular';
-$up=-124;
+$up=-123;
 $ut=50;
 $dw=1000;
 $diff='';
-$originalsize=20906012;
+$originalsize=20906000;
 $enc='';
 $file='tbht_r.z';
 $ctg='tbht_r.ctg.z';
