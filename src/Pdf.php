@@ -15,6 +15,8 @@ class Pdf extends \TCPDF
     private $pdfEncoding;
     private $pdfUnit;
 
+    protected $defaultFont = 'nanowoodhei';
+
     //页码样式
     private $footerFormat = [
         'prefix' => '页码：',
@@ -35,10 +37,7 @@ class Pdf extends \TCPDF
         $this->pdfFormat = $format;
         $this->pdfEncoding = $encoding;
 
-        $this->AddFont('ht', '', __DIR__ . '/font/ht.php');
-        $this->AddFont('tbht_r', '', __DIR__ . '/font/tbht_r.php');
-
-        $this->setFont('tbht_r', '', 10.5);
+        $this->loadFont();
 
     }
 
@@ -59,6 +58,14 @@ class Pdf extends \TCPDF
     public function setFooterFormat(array $footerFormat): void
     {
         $this->footerFormat = array_merge($this->footer_margin, $footerFormat);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultFont(): string
+    {
+        return $this->defaultFont;
     }
 
     /**
@@ -306,6 +313,20 @@ class Pdf extends \TCPDF
         return strlen($s);
     }
 
+    /**
+     * 自定义页脚
+     */
+    public function Footer(): void
+    {
+        $this->SetY(-10);
+        $font = $this->footerFormat['font'];
+        $this->SetFont($font['family'] ?? 'ht', '', $font['size'] ?? 11);
+        $prefix = $this->footerFormat['prefix'] ?? '页码：';
+        $separator = $this->footerFormat['separator'] ?? ' / ';
+        $align = $this->footerFormat['align'] ?? 'C';
+        $this->Cell(0, 0, $prefix . $this->getAliasNumPage() . $separator . $this->getAliasNbPages(), 0, 1, $align);
+    }
+
     private function tableCalculateSpansColumn(array $columnWidthArr, array $spans): array
     {
         $newWidthArr = [];
@@ -373,16 +394,14 @@ class Pdf extends \TCPDF
     }
 
     /**
-     * 自定义页脚
+     * 加载额外字体库
      */
-    public function Footer(): void
+    private function loadFont(): void
     {
-        $this->SetY(-10);
-        $font = $this->footerFormat['font'];
-        $this->SetFont($font['family'] ?? 'ht', '', $font['size'] ?? 11);
-        $prefix = $this->footerFormat['prefix'] ?? '页码：';
-        $separator = $this->footerFormat['separator'] ?? ' / ';
-        $align = $this->footerFormat['align'] ?? 'C';
-        $this->Cell(0, 0, $prefix . $this->getAliasNumPage() . $separator . $this->getAliasNbPages(), 0, 1, $align);
+        $fontDir = __DIR__ . '/font/';
+        foreach (glob("{$fontDir}*.php") as $file) {
+            $font = substr(str_replace($fontDir, '', $file), 0, -4);
+            $this->AddFont($font, '', $file);
+        }
     }
 }
